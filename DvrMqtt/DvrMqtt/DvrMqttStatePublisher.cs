@@ -12,6 +12,7 @@ namespace DvrMqtt.DvrMqtt;
 public class DvrMqttStatePublisher : IDisposable, IDvrMqttStatePublisher
 {
     private readonly DvrOptions dvrOptions_;
+    private readonly DvrMqttOptions dvrMqttOptions_;
     private readonly IDvrHttpWebService dvrHttpWeb_;
     private readonly IMqttIntegration mqttIntegration_;
     private readonly IHomeAssistantIntegration homeAssistantIntegration_;
@@ -23,12 +24,14 @@ public class DvrMqttStatePublisher : IDisposable, IDvrMqttStatePublisher
 
     public DvrMqttStatePublisher(
         IOptions<DvrOptions> dvrOptions,
+        IOptions<DvrMqttOptions> dvrMqttOptions,
         IDvrHttpWebService dvrHttpWeb, 
         IMqttIntegration mqttIntegration,
         IHomeAssistantIntegration homeAssistantIntegration,
         ILogger<DvrMqttStatePublisher> logger)
     {
         dvrOptions_ = dvrOptions.Value;
+        dvrMqttOptions_ = dvrMqttOptions.Value;
         dvrHttpWeb_ = dvrHttpWeb;
         mqttIntegration_ = mqttIntegration;
         homeAssistantIntegration_ = homeAssistantIntegration;
@@ -48,7 +51,7 @@ public class DvrMqttStatePublisher : IDisposable, IDvrMqttStatePublisher
                         dvrMqttEvents.DvrOrMqttDisconnected, 
                         dvrMqttEvents.StoppingToken)
                     .Forget();
-            }, () => { }, dvrMqttEvents.StoppingToken);
+            }, dvrMqttEvents.StoppingToken);
 
         dvrMqttEvents.DvrDisconnected
             .Subscribe(mqtt =>
@@ -122,7 +125,7 @@ public class DvrMqttStatePublisher : IDisposable, IDvrMqttStatePublisher
 
             var taskUpdateConfigProps = RunPublishConfigurationProperties(dvr, mqtt, dvrOrMqttDisconnected, cancellationToken);
 
-            var snapshotUpdate = dvrOptions_.IsNvr
+            var snapshotUpdate = dvrMqttOptions_.SnapshotsUpdateInterval <= 0 || dvrOptions_.IsNvr
                 ? Task.CompletedTask
                 : RunPublishDvrSnapshots(mqtt, dvrOrMqttDisconnected, cancellationToken);
 
@@ -182,7 +185,7 @@ public class DvrMqttStatePublisher : IDisposable, IDvrMqttStatePublisher
         CancellationToken cancellationToken)
     {
         return Observable
-            .Interval(TimeSpan.FromSeconds(20))
+            .Interval(TimeSpan.FromSeconds(dvrMqttOptions_.SnapshotsUpdateInterval))
             .TakeUntil(dvrOrMqttDisconnected)
             .SelectMany(async _ =>
             {

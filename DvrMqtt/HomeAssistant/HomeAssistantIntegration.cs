@@ -9,15 +9,18 @@ namespace DvrMqtt.HomeAssistant;
 public class HomeAssistantIntegration : IHomeAssistantIntegration
 {
     private readonly DvrOptions options_;
+    private readonly DvrMqttOptions dvrMqttOptions_;
     private readonly IMqttIntegration mqttIntegration_;
     private readonly IHomeAssistant homeAssistant_;
     private readonly string dvrName_;
 
     public HomeAssistantIntegration(
+        IOptions<DvrMqttOptions> dvrMqttOptions,
         IOptions<DvrOptions> dvrOptions,
         IMqttIntegration mqttIntegration,
         IHomeAssistant homeAssistant)
     {
+        dvrMqttOptions_ = dvrMqttOptions.Value;
         mqttIntegration_ = mqttIntegration;
         homeAssistant_ = homeAssistant;
         options_ = dvrOptions.Value;
@@ -41,7 +44,7 @@ public class HomeAssistantIntegration : IHomeAssistantIntegration
                     GetBinarySensorDeviceClass(binarySensor));
             }
 
-            if (!options_.IsNvr)
+            if (dvrMqttOptions_.SnapshotsUpdateInterval > 0 && !options_.IsNvr)
             {
                 await PublishCameraSnapshotConfig(mqttClient);
             }

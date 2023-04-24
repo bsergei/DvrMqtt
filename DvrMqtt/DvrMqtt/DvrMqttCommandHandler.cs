@@ -30,25 +30,16 @@ public class DvrMqttCommandHandler : IDvrMqttCommandHandler
         unhealthy_ = dvrMqttEvents.Unhealthy;
 
         dvrMqttEvents.DvrAndMqttConnected
-            .SelectMany(async _ =>
+            .Subscribe(_ =>
             {
-                try
-                {
-                    await RunCommandHandlers(
-                        _.dvr, 
-                        _.mqtt, 
+                RunCommandHandlers(
+                        _.dvr,
+                        _.mqtt,
                         dvrMqttEvents.DvrOrMqttDisconnected,
                         dvrMqttEvents.StateUpdateRequests,
-                        dvrMqttEvents.StoppingToken);
-                }
-                catch (Exception e)
-                {
-                    logger_.LogError(e, "Error in RunCommandHandlers");
-                }
-
-                return Void.Value;
-            })
-            .ForEachAsync(_ => { }, dvrMqttEvents.StoppingToken);
+                        dvrMqttEvents.StoppingToken)
+                    .Forget();
+            }, dvrMqttEvents.StoppingToken);;
     }
 
     private async Task RunCommandHandlers(
@@ -121,9 +112,17 @@ public class DvrMqttCommandHandler : IDvrMqttCommandHandler
                         logger_.LogError(e, $"Error in RunCommandHandler {command}");
                         SetUnhealthy();
                     }
+
                     return Void.Value;
                 })
                 .ForEachAsync(_ => { }, cancellationToken);
+        }
+        catch (OperationCanceledException)
+        {
+        }
+        catch (Exception exception)
+        {
+            logger_.LogError(exception, $"Command {command} handler error");
         }
         finally
         {
@@ -161,9 +160,16 @@ public class DvrMqttCommandHandler : IDvrMqttCommandHandler
                 })
                 .ForEachAsync(_ => { }, cancellationToken);
         }
+        catch (OperationCanceledException)
+        {
+        }
+        catch (Exception exception)
+        {
+            logger_.LogError(exception, $"Button {button} handler error");
+        }
         finally
         {
-            logger_.LogInformation($"{button}: Button handler finished");
+            logger_.LogInformation($"Button {button} handler finished");
         }
     }
 
