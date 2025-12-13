@@ -190,6 +190,12 @@ public class DvrMqttCommandHandler : IDvrMqttCommandHandler
                 stateUpdateRequests.OnNext((s => s.MailEnable = payload, task));
                 break;
 
+            case IMqttIntegration.SwitchFtpEnable:
+                var ftpEnable = payload == Defaults.PayloadOn;
+                task = dvr.SetMotionDetectConfiguration(ftpEnable: ftpEnable);
+                stateUpdateRequests.OnNext((s => s.FtpEnable = payload, task));
+                break;
+
             case IMqttIntegration.SwitchVoiceEnable:
                 var voiceEnable = payload == Defaults.PayloadOn;
                 task = dvr.SetMotionDetectConfiguration(voiceEnable: voiceEnable);

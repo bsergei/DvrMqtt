@@ -22,11 +22,13 @@ public class MqttIntegration : IMqttIntegration
             {
                 IMqttIntegration.SwitchVoiceEnable,
                 IMqttIntegration.SwitchMailEnable,
+                IMqttIntegration.SwitchFtpEnable,
             }
             : new[]
             {
                 IMqttIntegration.SwitchVoiceEnable,
                 IMqttIntegration.SwitchMailEnable,
+                IMqttIntegration.SwitchFtpEnable,
                 IMqttIntegration.SwitchLightEnable
             };
     }
@@ -56,6 +58,7 @@ public class MqttIntegration : IMqttIntegration
         {
             IMqttIntegration.SwitchVoiceEnable => "Camera Voice Alarm",
             IMqttIntegration.SwitchMailEnable => "Camera Mail Alarm",
+            IMqttIntegration.SwitchFtpEnable => "Camera FTP Alarm",
             IMqttIntegration.SwitchLightEnable => "Camera Light",
             IMqttIntegration.BinarySensorMotionDetectedAlarm => "Camera Motion",
             IMqttIntegration.BinarySensorIsProblemDetected => "Camera Problem",

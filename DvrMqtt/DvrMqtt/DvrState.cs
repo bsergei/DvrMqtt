@@ -11,6 +11,9 @@ public class DvrState
     [JsonPropertyName(IMqttIntegration.SwitchMailEnable)]
     public string MailEnable { get; set; } = Defaults.PayloadOff;
 
+    [JsonPropertyName(IMqttIntegration.SwitchFtpEnable)]
+    public string FtpEnable { get; set; } = Defaults.PayloadOff;
+
     [JsonPropertyName(IMqttIntegration.BinarySensorMotionDetectedAlarm)]
     public string MotionDetectedAlarm { get; set; } = Defaults.PayloadOff;
 

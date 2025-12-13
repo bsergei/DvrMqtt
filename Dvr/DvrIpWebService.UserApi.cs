@@ -15,7 +15,8 @@ public partial class DvrIpWebService
     private const string AlarmVoiceEnable = "VoiceEnable";
     private const string AlarmVoiceType = "VoiceType";
     private const string AlarmMailEnable = "MailEnable";
-    
+    private const string AlarmFTPEnable = "FTPEnable";
+
     private const int DefaultAlertVoiceType = 523; // You have entered into monitoring area.
     
     private const string CameraParamCommand = "Camera.Param.[0]";
@@ -23,7 +24,8 @@ public partial class DvrIpWebService
 
     public async Task SetMotionDetectConfiguration(
         bool? voiceEnable = null, 
-        bool? mailEnable = null)
+        bool? mailEnable = null,
+        bool? ftpEnable = null)
     {
         if (apiSync_ == null)
         {
@@ -54,6 +56,11 @@ public partial class DvrIpWebService
                 {
                     nodeArrayItem![AlarmEventHandler]![AlarmMailEnable] = mailEnable.Value;
                 }
+
+                if (ftpEnable != null)
+                {
+                    nodeArrayItem![AlarmEventHandler]![AlarmFTPEnable] = ftpEnable.Value;
+                }
             }
 
             var json = node.ToJsonString();
@@ -67,7 +74,7 @@ public partial class DvrIpWebService
         }
     }
 
-    public async Task<(bool VoiceEnable, bool MailEnable)> GetMotionDetectConfiguration()
+    public async Task<(bool VoiceEnable, bool MailEnable, bool FtpEnable)> GetMotionDetectConfiguration()
     {
         if (apiSync_ == null)
         {
@@ -84,18 +91,21 @@ public partial class DvrIpWebService
 
             var voiceEnable = true;
             var mailEnable = true;
+            var ftpEnable = true;
 
             var nodeArray = node.AsArray();
             foreach (var nodeArrayItem in nodeArray)
             {
                 var oneVoiceEnable = nodeArrayItem![AlarmEventHandler]![AlarmVoiceEnable]!.GetValue<bool>();
                 var oneMailEnable = nodeArrayItem[AlarmEventHandler]![AlarmMailEnable]!.GetValue<bool>();
+                var oneFtpEnable = nodeArrayItem[AlarmEventHandler]![AlarmFTPEnable]!.GetValue<bool>();
 
                 voiceEnable = voiceEnable && oneVoiceEnable;
                 mailEnable = mailEnable && oneMailEnable;
+                ftpEnable = ftpEnable && oneFtpEnable;
             }
 
-            return (voiceEnable, mailEnable);
+            return (voiceEnable, mailEnable, ftpEnable);
         }
         finally
         {

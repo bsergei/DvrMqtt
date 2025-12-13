@@ -18,10 +18,11 @@ public interface IDvrIpWebService
     IObservable<AlarmInfo> ObserveAlarms();
 
     Task SetMotionDetectConfiguration(
-        bool? voiceEnable = null, 
-        bool? mailEnable = null);
+        bool? voiceEnable = null,
+        bool? mailEnable = null,
+        bool? ftpEnable = null);
 
-    Task<(bool VoiceEnable, bool MailEnable)> GetMotionDetectConfiguration();
+    Task<(bool VoiceEnable, bool MailEnable, bool FtpEnable)> GetMotionDetectConfiguration();
 
     Task SetCameraParam(uint? dayNightColor = null);
 

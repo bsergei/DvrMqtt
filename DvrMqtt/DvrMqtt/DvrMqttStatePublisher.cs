@@ -287,6 +287,7 @@ public class DvrMqttStatePublisher : IDisposable, IDvrMqttStatePublisher
 
         state_.VoiceEnable = md.VoiceEnable ? Defaults.PayloadOn : Defaults.PayloadOff;
         state_.MailEnable = md.MailEnable ? Defaults.PayloadOn : Defaults.PayloadOff;
+        state_.FtpEnable = md.FtpEnable ? Defaults.PayloadOn : Defaults.PayloadOff;
 
         if (!dvrOptions_.IsNvr)
         {

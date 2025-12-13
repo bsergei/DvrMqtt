@@ -6,6 +6,7 @@ public interface IMqttIntegration
 {
     public const string SwitchVoiceEnable = "camera_motion_detect_alarm_voice_enable";
     public const string SwitchMailEnable = "camera_motion_detect_alarm_mail_enable";
+    public const string SwitchFtpEnable = "camera_motion_detect_alarm_ftp_enable";
     public const string SwitchLightEnable = "camera_light_enable";
 
     public const string BinarySensorMotionDetectedAlarm = "camera_motion_detected_alarm";

@@ -40,9 +40,8 @@ public class MqttClientService : IDisposable, IMqttClientService
     {
         var options = options_.Value;
         var managedMqttClientOptions = new ManagedMqttClientOptionsBuilder()
-            .WithClientOptions(
-                new MqttClientOptionsBuilder()
-                    .WithClientId(clientId)
+            .WithClientOptions(b =>
+                b.WithClientId(clientId)
                     .WithCredentials(options.Username, options.Password)
                     .WithConnectionUri(new Uri(options.ConnectionUri))
                     .WithWillTopic(willTopic)
@@ -165,7 +164,7 @@ public class MqttClientService : IDisposable, IMqttClientService
     {
         foreach (var observer in GetTopicObservers(e.ApplicationMessage.Topic))
         {
-            var payload = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
+            var payload = Encoding.UTF8.GetString(e.ApplicationMessage.PayloadSegment);
             observer.OnNext(payload);
         }
 
